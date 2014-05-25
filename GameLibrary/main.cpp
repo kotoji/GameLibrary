@@ -3,12 +3,6 @@
 #include "test.h"
 #include "game_controller.h"
 
-namespace gfw {
-bool createWindow(HWND &hwnd, HINSTANCE h_inst, int width, int height, bool fullscreen);
-bool peekMessage();
-LRESULT WINAPI winProc(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
-}
-
 int WINAPI WinMain(HINSTANCE h_inst, HINSTANCE h_prev_inst,
     LPSTR cmd_line, int cmd_show) {
 
