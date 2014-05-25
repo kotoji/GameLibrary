@@ -21,6 +21,12 @@ class GameController final{
     bool        paused_;
     bool        initialized_;
 
+    // use those variables when call run method(initialization).
+    int width_;
+    int height_;
+    float fps_;
+    bool fullscreen_;
+
     LARGE_INTEGER time_start_;
     LARGE_INTEGER time_end_;
     LARGE_INTEGER timer_freq_;
@@ -28,6 +34,9 @@ class GameController final{
     static GameController* game_controller_;
 
     GameController();
+    GameController(const GameController&) = delete;
+    GameController(const GameController&&) = delete;
+    GameController& operator=(const GameController&) = delete;
     virtual ~GameController();
 
 public:
@@ -36,12 +45,17 @@ public:
     // window message handler
     LRESULT messageHandler(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
 
-    // initialize the geme library
-    void initialize(HWND hwnd, int width, int height, bool fullscreen, float fps);
+    // set initial parameters. those methods is useless after run method is called
+    void setWidth(int width);
+    void setHeight(int height);
+    void setFps(float fps);
+    void setIsFullscreen(bool fullscreen);
 
-    void setGame(std::shared_ptr<Game> game);
+    // initialize and run the game.
+    void run(HINSTANCE h_inst, std::shared_ptr<Game> game);
+
     // call in the windows main loop
-    void run();
+    void main_loop();
     // call when the graphics device was lost.
     // release all video memory to reset graphics device
     void releaseAll();

@@ -6,9 +6,7 @@ namespace gfw {
 Graphics::Graphics() :
 direct3d_(nullptr),
 device3d_(nullptr),
-fullscreen_(false),
-width_(400),
-height_(600) {
+fullscreen_(false) {
     bg_color_ = D3DCOLOR_ARGB(255, 64, 64, 128);
 }
 

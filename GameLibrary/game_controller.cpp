@@ -1,5 +1,6 @@
 #include "game_controller.h"
 #include "utilities.h"
+#include "win32api.h" // 
 
 namespace gfw {
 
@@ -8,6 +9,10 @@ GameController* GameController::game_controller_ = nullptr;
 GameController::GameController() :
 graphics_(nullptr),
 paused_(false),
+width_(640),
+height_(480),
+fps_(60.f),
+fullscreen_(false),
 initialized_(false) {
     input_ = new Input();
 }
@@ -28,18 +33,35 @@ GameController* GameController::getInstance() {
     return game_controller_;
 }
 
-// initialze the game.
-// throws GameError
-void GameController::initialize(HWND hwnd, int width, int height, 
-                                bool fullscreen, float fps) {
-    hwnd_ = hwnd;
+// set variable for initarization.
+void GameController::setWidth(int width) {
+    width_ = width;
+}
+void GameController::setHeight(int height) {
+    height_ = height;
+}
+void GameController::setFps(float fps) {
+    fps_ = fps;
+}
+void GameController::setIsFullscreen(bool fullscreen) {
+    fullscreen_ = fullscreen;
+}
 
+// initialze and run the game.
+// throws GameError
+void GameController::run(HINSTANCE h_inst, std::shared_ptr<Game> game) {
+    // initialize win32 API
+    if (!createWindow(hwnd_, h_inst, width_, height_, fullscreen_)) {
+        throw(GameError(ErrorCode::FatalError, "Failed in initializing win32 API"));
+    }
+
+    // initialize GameController
     graphics_ = new Graphics();
-    graphics_->initialize(hwnd_, width, height, fullscreen);  // throws GameError
+    graphics_->initialize(hwnd_, width_, height_, fullscreen_);  // throws GameError
 
     input_->initialize(hwnd_, false); // throws GameError
 
-    frame_time_ = 1.0f / fps;
+    frame_time_ = 1.0f / fps_;
 
     // set up timer
     if (QueryPerformanceFrequency(&timer_freq_) == false) {
@@ -48,10 +70,16 @@ void GameController::initialize(HWND hwnd, int width, int height,
     QueryPerformanceCounter(&time_start_);
 
     initialized_ = true;
-}
 
-void GameController::setGame(std::shared_ptr<Game> game) {
-    game_ = game;
+    // run game
+    while (true) {
+        if (!peekMessage()) {
+            break;
+        }
+        else {
+            main_loop();
+        }
+    }
 }
 
 // render items. (leave most processing to draw())
@@ -93,12 +121,8 @@ void GameController::handleLostGraphicsDevice() {
     }
 }
 
-// call in the windows main loop
-void GameController::run() {
-    if (graphics_ == nullptr) {
-        return;
-    }
-
+// main loop
+void GameController::main_loop() {
     // adjust fps
     QueryPerformanceCounter(&time_end_);
     const float elapsed_time = static_cast<float>(time_end_.QuadPart - time_start_.QuadPart) /

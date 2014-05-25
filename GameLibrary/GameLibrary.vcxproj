@@ -74,6 +74,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="test.h" />
     <ClInclude Include="utilities.h" />
+    <ClInclude Include="win32api.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp" />
@@ -82,6 +83,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="win32api.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

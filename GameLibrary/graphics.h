@@ -30,6 +30,9 @@ class Graphics
 
 public:
     Graphics();
+    Graphics(const Graphics&) = delete;
+    Graphics(const Graphics&&) = delete;
+    Graphics& operator=(const Graphics&) = delete;
     virtual ~Graphics();
 
     void releaseAll();
@@ -38,7 +41,7 @@ public:
 
     HRESULT showBackBuffer();
 
-    bool isAdapterCompatible(); // display_mode_を変更する。名前を変えたい。
+    bool isAdapterCompatible(); // display_mode_を書き換える(副作用がある)。名前を変えたい。
 
     HRESULT reset();
 
